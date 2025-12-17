@@ -1,0 +1,191 @@
+#!/usr/bin/env python3
+"""
+Generate a gallery README for the TFP/ folder.
+
+Scans TFP/ recursively for .png files, groups them by filename prefix,
+and generates TFP/README.md with embedded images in a clean table layout.
+
+Usage:
+    python tools/make_tfp_readme_gallery.py
+"""
+
+import os
+import re
+from pathlib import Path
+from urllib.parse import quote
+from collections import defaultdict
+
+
+def url_encode_path(path: str) -> str:
+    """URL-encode a path, handling spaces and special characters."""
+    # Split path into parts and encode each part
+    parts = path.split('/')
+    encoded_parts = [quote(part, safe='') for part in parts]
+    return '/'.join(encoded_parts)
+
+
+def extract_prefix(filename: str) -> str:
+    """
+    Extract the grouping prefix from a filename.
+
+    Examples:
+        "Business-Innovation Q1.png" -> "Business-Innovation"
+        "Sperm and Egg Q2.png" -> "Sperm and Egg"
+        "TFP Webpage IEC visual and information operators.png" -> "Misc"
+    """
+    # Pattern: prefix followed by Q1/Q2/Q3/Q4
+    match = re.match(r'^(.+?)\s+Q[1-4]\.png$', filename, re.IGNORECASE)
+    if match:
+        return match.group(1).strip()
+
+    # Pattern: prefix followed by "image Q1/Q2/Q3/Q4"
+    match = re.match(r'^(.+?)\s+image\s+Q[1-4]\.png$', filename, re.IGNORECASE)
+    if match:
+        return match.group(1).strip()
+
+    return "Misc"
+
+
+def natural_sort_key(s: str):
+    """Sort key for natural (human-friendly) sorting."""
+    return [
+        int(text) if text.isdigit() else text.lower()
+        for text in re.split(r'(\d+)', s)
+    ]
+
+
+def make_anchor(title: str) -> str:
+    """Create a GitHub-compatible anchor from a title."""
+    # Lowercase, replace spaces with hyphens, remove special chars
+    anchor = title.lower()
+    anchor = re.sub(r'[^a-z0-9\s-]', '', anchor)
+    anchor = re.sub(r'\s+', '-', anchor)
+    return anchor
+
+
+def generate_readme(tfp_dir: Path) -> str:
+    """Generate the README.md content."""
+
+    # Find all PNG files recursively
+    png_files = sorted(tfp_dir.rglob('*.png'), key=lambda p: natural_sort_key(p.name))
+
+    if not png_files:
+        return "# TFP Image Gallery\n\nNo PNG files found.\n"
+
+    # Group files by prefix
+    groups = defaultdict(list)
+    for png_path in png_files:
+        # Get path relative to TFP/
+        rel_path = png_path.relative_to(tfp_dir)
+        prefix = extract_prefix(png_path.name)
+        groups[prefix].append(rel_path)
+
+    # Sort groups: named groups first (alphabetically), then Misc last
+    sorted_groups = sorted(
+        groups.keys(),
+        key=lambda x: (x == "Misc", natural_sort_key(x))
+    )
+
+    # Build README content
+    lines = []
+
+    # Header
+    lines.append("# TFP Image Gallery")
+    lines.append("")
+    lines.append("This folder contains TFP (The Fractal Pattern) visualization images organized by category.")
+    lines.append("Each category includes Q1-Q4 quadrant views.")
+    lines.append("")
+
+    # Table of Contents
+    lines.append("## Table of Contents")
+    lines.append("")
+    for group_name in sorted_groups:
+        anchor = make_anchor(group_name)
+        lines.append(f"- [{group_name}](#{anchor})")
+    lines.append("")
+    lines.append("---")
+    lines.append("")
+
+    # Generate sections
+    for group_name in sorted_groups:
+        files = groups[group_name]
+        anchor = make_anchor(group_name)
+
+        lines.append(f"## {group_name}")
+        lines.append("")
+
+        # Sort files within group naturally
+        files = sorted(files, key=lambda p: natural_sort_key(str(p)))
+
+        # Create 2-column table layout
+        lines.append("<table>")
+
+        for i in range(0, len(files), 2):
+            lines.append("<tr>")
+
+            # First column
+            file1 = files[i]
+            encoded_path1 = url_encode_path(str(file1))
+            display_name1 = file1.stem  # filename without extension
+
+            lines.append("<td align=\"center\">")
+            lines.append(f"<img src=\"{encoded_path1}\" width=\"520\" alt=\"{display_name1}\"><br>")
+            lines.append(f"<b>{display_name1}</b><br>")
+            lines.append(f"<a href=\"{encoded_path1}\">Open image</a>")
+            lines.append("</td>")
+
+            # Second column (if exists)
+            if i + 1 < len(files):
+                file2 = files[i + 1]
+                encoded_path2 = url_encode_path(str(file2))
+                display_name2 = file2.stem
+
+                lines.append("<td align=\"center\">")
+                lines.append(f"<img src=\"{encoded_path2}\" width=\"520\" alt=\"{display_name2}\"><br>")
+                lines.append(f"<b>{display_name2}</b><br>")
+                lines.append(f"<a href=\"{encoded_path2}\">Open image</a>")
+                lines.append("</td>")
+            else:
+                lines.append("<td></td>")
+
+            lines.append("</tr>")
+
+        lines.append("</table>")
+        lines.append("")
+        lines.append("---")
+        lines.append("")
+
+    # Footer
+    lines.append("*This gallery was auto-generated by `tools/make_tfp_readme_gallery.py`*")
+    lines.append("")
+
+    return '\n'.join(lines)
+
+
+def main():
+    # Determine paths
+    script_dir = Path(__file__).parent.resolve()
+    repo_root = script_dir.parent
+    tfp_dir = repo_root / "TFP"
+    readme_path = tfp_dir / "README.md"
+
+    if not tfp_dir.exists():
+        print(f"Error: TFP directory not found at {tfp_dir}")
+        return 1
+
+    # Generate README content
+    content = generate_readme(tfp_dir)
+
+    # Write README
+    readme_path.write_text(content, encoding='utf-8')
+    print(f"Generated: {readme_path}")
+
+    # Report stats
+    png_count = len(list(tfp_dir.rglob('*.png')))
+    print(f"Found {png_count} PNG files")
+
+    return 0
+
+
+if __name__ == "__main__":
+    exit(main())
