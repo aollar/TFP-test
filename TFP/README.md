@@ -14,7 +14,7 @@ Each category includes Q1-Q4 quadrant views.
 - [Objective Personality](#objective-personality)
 - [Self-Development](#self-development)
 - [Sperm and Egg](#sperm-and-egg)
-- [Misc](#misc)
+- [TFP Website](#misc)
 
 ---
 
