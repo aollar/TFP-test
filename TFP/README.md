@@ -321,8 +321,8 @@ This folder contains TFP (The Fractal Pattern) files organized by category.
 
 | File | Type | Description |
 |------|------|-------------|
-| 📄 [TFP Consume (Oe + Di) vs Sleep (Di + Oi).txt]([TFP%20Consume%20%28Oe%20%2B%20Di%29%20vs%20Sleep%20%28Di%20%2B%20Oi%29.txt](https://raw.githubusercontent.com/aollar/TFP-test/refs/heads/main/TFP/TFP%20Consume%20(Oe%20%2B%20Di)%20vs%20Sleep%20(Di%20%2B%20Oi).txt)) | TXT | TFP Consume (Oe + Di) vs Sleep (Di + Oi) |
-| 📄 [TFP Theory Entire Story (3).txt]([TFP%20Theory%20Entire%20Story%20%283%29.txt](https://raw.githubusercontent.com/aollar/TFP-test/refs/heads/main/TFP/TFP%20Theory%20Entire%20Story%20(3).txt)) | TXT | TFP Theory Entire Story (3) |
+| 📄 [TFP Consume (Oe + Di) vs Sleep (Di + Oi).txt](TFP%20Consume%20%28Oe%20%2B%20Di%29%20vs%20Sleep%20%28Di%20%2B%20Oi%29.txt) | TXT | TFP Consume (Oe + Di) vs Sleep (Di + Oi) |
+| 📄 [TFP Theory Entire Story (3).txt](TFP%20Theory%20Entire%20Story%20%283%29.txt) | TXT | TFP Theory Entire Story (3) |
 
 ---
 
