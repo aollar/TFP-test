@@ -1,20 +1,22 @@
-# TFP Image Gallery
+# TFP File Gallery
 
-This folder contains TFP (The Fractal Pattern) visualization images organized by category.
-Each category includes Q1-Q4 quadrant views.
+This folder contains TFP (The Fractal Pattern) files organized by category.
+
+**Total files:** 37 (37 images, 0 documents/other)
 
 ## Table of Contents
 
-- [Business-Innovation](#business-innovation)
-- [Compute](#compute)
-- [Cosmology](#cosmology)
-- [DNA-Cellular Replication](#dna-cellular-replication)
-- [Evolution](#evolution)
-- [Fundamental Forces image](#fundamental-forces-image)
-- [Objective Personality](#objective-personality)
-- [Self-Development](#self-development)
-- [Sperm and Egg](#sperm-and-egg)
-- [Misc](#misc)
+### Images
+- [Business-Innovation](#business-innovation) (4 files)
+- [Compute](#compute) (4 files)
+- [Cosmology](#cosmology) (4 files)
+- [DNA-Cellular Replication](#dna-cellular-replication) (4 files)
+- [Evolution](#evolution) (4 files)
+- [Fundamental Forces image](#fundamental-forces-image) (4 files)
+- [Objective Personality](#objective-personality) (4 files)
+- [Self-Development](#self-development) (4 files)
+- [Sperm and Egg](#sperm-and-egg) (4 files)
+- [Misc](#misc) (1 files)
 
 ---
 
