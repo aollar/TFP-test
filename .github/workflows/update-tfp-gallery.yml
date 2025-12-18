@@ -3,8 +3,7 @@ name: Update TFP Gallery README
 on:
   push:
     paths:
-      - 'TFP/**/*.png'
-      - 'TFP/**/*.PNG'
+      - 'TFP/**'
       - 'tools/make_tfp_readme_gallery.py'
     branches:
       - main
