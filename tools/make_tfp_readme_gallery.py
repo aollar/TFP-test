@@ -5,7 +5,7 @@ Generate a gallery README for the TFP/ folder.
 Scans TFP/ recursively for all files, groups them by filename prefix,
 and generates TFP/README.md with:
 - Embedded previews for images (png, jpg, jpeg, gif, webp, svg)
-- Download links for documents and other files
+- Raw GitHub download links for documents and other files
 
 Usage:
     python tools/make_tfp_readme_gallery.py
@@ -15,6 +15,12 @@ import re
 from pathlib import Path
 from urllib.parse import quote
 from collections import defaultdict
+
+# GitHub repository configuration
+GITHUB_OWNER = "aollar"
+GITHUB_REPO = "TFP-test"
+GITHUB_BRANCH = "main"
+RAW_BASE_URL = f"https://raw.githubusercontent.com/{GITHUB_OWNER}/{GITHUB_REPO}/refs/heads/{GITHUB_BRANCH}/TFP"
 
 
 # File type categories
@@ -232,12 +238,13 @@ def generate_readme(tfp_dir: Path) -> str:
 
         for file_path in sorted(other_files, key=lambda p: natural_sort_key(str(p))):
             rel_path = file_path.relative_to(tfp_dir)
-            encoded_path = url_encode_path(str(rel_path))
+            encoded_filename = url_encode_path(str(rel_path))
+            raw_url = f"{RAW_BASE_URL}/{encoded_filename}"
             file_type = get_file_type(file_path.suffix)
             icon = FILE_ICONS.get(file_type, FILE_ICONS['other'])
             ext = file_path.suffix.upper().lstrip('.')
 
-            lines.append(f"| {icon} [{rel_path.name}]({encoded_path}) | {ext} | {rel_path.stem} |")
+            lines.append(f"| {icon} [{rel_path.name}]({raw_url}) | {ext} | {rel_path.stem} |")
 
         lines.append("")
         lines.append("---")
