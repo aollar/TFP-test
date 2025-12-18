@@ -2,7 +2,7 @@
 
 This folder contains TFP (The Fractal Pattern) files organized by category.
 
-**Total files:** 37 (37 images, 0 documents/other)
+**Total files:** 39 (37 images, 2 documents/other)
 
 ## Table of Contents
 
@@ -17,6 +17,9 @@ This folder contains TFP (The Fractal Pattern) files organized by category.
 - [Self-Development](#self-development) (4 files)
 - [Sperm and Egg](#sperm-and-egg) (4 files)
 - [Misc](#misc) (1 files)
+
+### Documents & Other Files
+- [Documents & Other Files](#documents--other-files-1)
 
 ---
 
@@ -311,6 +314,15 @@ This folder contains TFP (The Fractal Pattern) files organized by category.
 <td></td>
 </tr>
 </table>
+
+---
+
+## Documents & Other Files
+
+| File | Type | Description |
+|------|------|-------------|
+| 📄 [TFP Consume (Oe + Di) vs Sleep (Di + Oi).txt](https://raw.githubusercontent.com/aollar/TFP-test/refs/heads/main/TFP/TFP%20Consume%20%28Oe%20%2B%20Di%29%20vs%20Sleep%20%28Di%20%2B%20Oi%29.txt) | TXT | TFP Consume (Oe + Di) vs Sleep (Di + Oi) |
+| 📄 [TFP Theory Entire Story (3).txt](https://raw.githubusercontent.com/aollar/TFP-test/refs/heads/main/TFP/TFP%20Theory%20Entire%20Story%20%283%29.txt) | TXT | TFP Theory Entire Story (3) |
 
 ---
 
