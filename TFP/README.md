@@ -1,20 +1,25 @@
-# TFP Image Gallery
+# TFP File Gallery
 
-This folder contains TFP (The Fractal Pattern) visualization images organized by category.
-Each category includes Q1-Q4 quadrant views.
+This folder contains TFP (The Fractal Pattern) files organized by category.
+
+**Total files:** 39 (37 images, 2 documents/other)
 
 ## Table of Contents
 
-- [Business-Innovation](#business-innovation)
-- [Compute](#compute)
-- [Cosmology](#cosmology)
-- [DNA-Cellular Replication](#dna-cellular-replication)
-- [Evolution](#evolution)
-- [Fundamental Forces image](#fundamental-forces-image)
-- [Objective Personality](#objective-personality)
-- [Self-Development](#self-development)
-- [Sperm and Egg](#sperm-and-egg)
-- [TFP Website](#misc)
+### Images
+- [Business-Innovation](#business-innovation) (4 files)
+- [Compute](#compute) (4 files)
+- [Cosmology](#cosmology) (4 files)
+- [DNA-Cellular Replication](#dna-cellular-replication) (4 files)
+- [Evolution](#evolution) (4 files)
+- [Fundamental Forces image](#fundamental-forces-image) (4 files)
+- [Objective Personality](#objective-personality) (4 files)
+- [Self-Development](#self-development) (4 files)
+- [Sperm and Egg](#sperm-and-egg) (4 files)
+- [Misc](#misc) (1 files)
+
+### Documents & Other Files
+- [Documents & Other Files](#documents--other-files-1)
 
 ---
 
@@ -309,6 +314,15 @@ Each category includes Q1-Q4 quadrant views.
 <td></td>
 </tr>
 </table>
+
+---
+
+## Documents & Other Files
+
+| File | Type | Description |
+|------|------|-------------|
+| 📄 [TFP Consume (Oe + Di) vs Sleep (Di + Oi).txt](TFP%20Consume%20%28Oe%20%2B%20Di%29%20vs%20Sleep%20%28Di%20%2B%20Oi%29.txt) | TXT | TFP Consume (Oe + Di) vs Sleep (Di + Oi) |
+| 📄 [TFP Theory Entire Story (3).txt](TFP%20Theory%20Entire%20Story%20%283%29.txt) | TXT | TFP Theory Entire Story (3) |
 
 ---
 

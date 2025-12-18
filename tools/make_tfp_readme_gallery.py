@@ -2,23 +2,61 @@
 """
 Generate a gallery README for the TFP/ folder.
 
-Scans TFP/ recursively for .png files, groups them by filename prefix,
-and generates TFP/README.md with embedded images in a clean table layout.
+Scans TFP/ recursively for all files, groups them by filename prefix,
+and generates TFP/README.md with:
+- Embedded previews for images (png, jpg, jpeg, gif, webp, svg)
+- Download links for documents and other files
 
 Usage:
     python tools/make_tfp_readme_gallery.py
 """
 
-import os
 import re
 from pathlib import Path
 from urllib.parse import quote
 from collections import defaultdict
 
 
+# File type categories
+IMAGE_EXTENSIONS = {'.png', '.jpg', '.jpeg', '.gif', '.webp', '.svg'}
+DOCUMENT_EXTENSIONS = {'.pdf', '.doc', '.docx', '.txt', '.md', '.rtf', '.odt'}
+SPREADSHEET_EXTENSIONS = {'.xls', '.xlsx', '.csv', '.ods'}
+PRESENTATION_EXTENSIONS = {'.ppt', '.pptx', '.odp'}
+CODE_EXTENSIONS = {'.py', '.js', '.ts', '.html', '.css', '.json', '.xml', '.yaml', '.yml'}
+ARCHIVE_EXTENSIONS = {'.zip', '.tar', '.gz', '.rar', '.7z'}
+
+# Emoji icons for file types
+FILE_ICONS = {
+    'image': '🖼️',
+    'document': '📄',
+    'spreadsheet': '📊',
+    'presentation': '📽️',
+    'code': '💻',
+    'archive': '📦',
+    'other': '📎',
+}
+
+
+def get_file_type(extension: str) -> str:
+    """Determine the file type category from extension."""
+    ext = extension.lower()
+    if ext in IMAGE_EXTENSIONS:
+        return 'image'
+    elif ext in DOCUMENT_EXTENSIONS:
+        return 'document'
+    elif ext in SPREADSHEET_EXTENSIONS:
+        return 'spreadsheet'
+    elif ext in PRESENTATION_EXTENSIONS:
+        return 'presentation'
+    elif ext in CODE_EXTENSIONS:
+        return 'code'
+    elif ext in ARCHIVE_EXTENSIONS:
+        return 'archive'
+    return 'other'
+
+
 def url_encode_path(path: str) -> str:
     """URL-encode a path, handling spaces and special characters."""
-    # Split path into parts and encode each part
     parts = path.split('/')
     encoded_parts = [quote(part, safe='') for part in parts]
     return '/'.join(encoded_parts)
@@ -31,15 +69,18 @@ def extract_prefix(filename: str) -> str:
     Examples:
         "Business-Innovation Q1.png" -> "Business-Innovation"
         "Sperm and Egg Q2.png" -> "Sperm and Egg"
-        "TFP Webpage IEC visual and information operators.png" -> "Misc"
+        "random-file.txt" -> "Misc"
     """
+    # Remove extension for analysis
+    stem = Path(filename).stem
+
     # Pattern: prefix followed by Q1/Q2/Q3/Q4
-    match = re.match(r'^(.+?)\s+Q[1-4]\.png$', filename, re.IGNORECASE)
+    match = re.match(r'^(.+?)\s+Q[1-4]$', stem, re.IGNORECASE)
     if match:
         return match.group(1).strip()
 
     # Pattern: prefix followed by "image Q1/Q2/Q3/Q4"
-    match = re.match(r'^(.+?)\s+image\s+Q[1-4]\.png$', filename, re.IGNORECASE)
+    match = re.match(r'^(.+?)\s+image\s+Q[1-4]$', stem, re.IGNORECASE)
     if match:
         return match.group(1).strip()
 
@@ -56,7 +97,6 @@ def natural_sort_key(s: str):
 
 def make_anchor(title: str) -> str:
     """Create a GitHub-compatible anchor from a title."""
-    # Lowercase, replace spaces with hyphens, remove special chars
     anchor = title.lower()
     anchor = re.sub(r'[^a-z0-9\s-]', '', anchor)
     anchor = re.sub(r'\s+', '-', anchor)
@@ -66,23 +106,39 @@ def make_anchor(title: str) -> str:
 def generate_readme(tfp_dir: Path) -> str:
     """Generate the README.md content."""
 
-    # Find all PNG files recursively
-    png_files = sorted(tfp_dir.rglob('*.png'), key=lambda p: natural_sort_key(p.name))
+    # Find all files recursively (exclude README.md itself and hidden files)
+    all_files = sorted(
+        [f for f in tfp_dir.rglob('*')
+         if f.is_file()
+         and f.name != 'README.md'
+         and not f.name.startswith('.')],
+        key=lambda p: natural_sort_key(p.name)
+    )
 
-    if not png_files:
-        return "# TFP Image Gallery\n\nNo PNG files found.\n"
+    if not all_files:
+        return "# TFP File Gallery\n\nNo files found.\n"
 
-    # Group files by prefix
-    groups = defaultdict(list)
-    for png_path in png_files:
-        # Get path relative to TFP/
-        rel_path = png_path.relative_to(tfp_dir)
-        prefix = extract_prefix(png_path.name)
-        groups[prefix].append(rel_path)
+    # Separate images and other files
+    image_files = [f for f in all_files if f.suffix.lower() in IMAGE_EXTENSIONS]
+    other_files = [f for f in all_files if f.suffix.lower() not in IMAGE_EXTENSIONS]
 
-    # Sort groups: named groups first (alphabetically), then Misc last
-    sorted_groups = sorted(
-        groups.keys(),
+    # Group image files by prefix
+    image_groups = defaultdict(list)
+    for img_path in image_files:
+        rel_path = img_path.relative_to(tfp_dir)
+        prefix = extract_prefix(img_path.name)
+        image_groups[prefix].append(rel_path)
+
+    # Group other files by type
+    other_by_type = defaultdict(list)
+    for file_path in other_files:
+        rel_path = file_path.relative_to(tfp_dir)
+        file_type = get_file_type(file_path.suffix)
+        other_by_type[file_type].append(rel_path)
+
+    # Sort image groups: named groups first, then Misc
+    sorted_image_groups = sorted(
+        image_groups.keys(),
         key=lambda x: (x == "Misc", natural_sort_key(x))
     )
 
@@ -90,26 +146,38 @@ def generate_readme(tfp_dir: Path) -> str:
     lines = []
 
     # Header
-    lines.append("# TFP Image Gallery")
+    lines.append("# TFP File Gallery")
     lines.append("")
-    lines.append("This folder contains TFP (The Fractal Pattern) visualization images organized by category.")
-    lines.append("Each category includes Q1-Q4 quadrant views.")
+    lines.append("This folder contains TFP (The Fractal Pattern) files organized by category.")
+    lines.append("")
+
+    # Stats
+    lines.append(f"**Total files:** {len(all_files)} ({len(image_files)} images, {len(other_files)} documents/other)")
     lines.append("")
 
     # Table of Contents
     lines.append("## Table of Contents")
     lines.append("")
-    for group_name in sorted_groups:
-        anchor = make_anchor(group_name)
-        lines.append(f"- [{group_name}](#{anchor})")
+
+    if image_files:
+        lines.append("### Images")
+        for group_name in sorted_image_groups:
+            anchor = make_anchor(group_name)
+            count = len(image_groups[group_name])
+            lines.append(f"- [{group_name}](#{anchor}) ({count} files)")
+
+    if other_files:
+        lines.append("")
+        lines.append("### Documents & Other Files")
+        lines.append(f"- [Documents & Other Files](#documents--other-files-1)")
+
     lines.append("")
     lines.append("---")
     lines.append("")
 
-    # Generate sections
-    for group_name in sorted_groups:
-        files = groups[group_name]
-        anchor = make_anchor(group_name)
+    # Generate image sections
+    for group_name in sorted_image_groups:
+        files = image_groups[group_name]
 
         lines.append(f"## {group_name}")
         lines.append("")
@@ -126,7 +194,7 @@ def generate_readme(tfp_dir: Path) -> str:
             # First column
             file1 = files[i]
             encoded_path1 = url_encode_path(str(file1))
-            display_name1 = file1.stem  # filename without extension
+            display_name1 = file1.stem
 
             lines.append("<td align=\"center\">")
             lines.append(f"<img src=\"{encoded_path1}\" width=\"520\" alt=\"{display_name1}\"><br>")
@@ -151,6 +219,26 @@ def generate_readme(tfp_dir: Path) -> str:
             lines.append("</tr>")
 
         lines.append("</table>")
+        lines.append("")
+        lines.append("---")
+        lines.append("")
+
+    # Generate documents/other files section
+    if other_files:
+        lines.append("## Documents & Other Files")
+        lines.append("")
+        lines.append("| File | Type | Description |")
+        lines.append("|------|------|-------------|")
+
+        for file_path in sorted(other_files, key=lambda p: natural_sort_key(str(p))):
+            rel_path = file_path.relative_to(tfp_dir)
+            encoded_path = url_encode_path(str(rel_path))
+            file_type = get_file_type(file_path.suffix)
+            icon = FILE_ICONS.get(file_type, FILE_ICONS['other'])
+            ext = file_path.suffix.upper().lstrip('.')
+
+            lines.append(f"| {icon} [{rel_path.name}]({encoded_path}) | {ext} | {rel_path.stem} |")
+
         lines.append("")
         lines.append("---")
         lines.append("")
@@ -181,8 +269,10 @@ def main():
     print(f"Generated: {readme_path}")
 
     # Report stats
-    png_count = len(list(tfp_dir.rglob('*.png')))
-    print(f"Found {png_count} PNG files")
+    all_files = [f for f in tfp_dir.rglob('*') if f.is_file() and f.name != 'README.md']
+    image_count = len([f for f in all_files if f.suffix.lower() in IMAGE_EXTENSIONS])
+    other_count = len(all_files) - image_count
+    print(f"Found {len(all_files)} files ({image_count} images, {other_count} documents/other)")
 
     return 0
 
