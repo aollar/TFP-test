@@ -231,12 +231,13 @@ def generate_readme(tfp_dir: Path) -> str:
         lines.append("|------|------|-------------|")
 
         for file_path in sorted(other_files, key=lambda p: natural_sort_key(str(p))):
-            encoded_path = url_encode_path(str(file_path))
+            rel_path = file_path.relative_to(tfp_dir)
+            encoded_path = url_encode_path(str(rel_path))
             file_type = get_file_type(file_path.suffix)
             icon = FILE_ICONS.get(file_type, FILE_ICONS['other'])
             ext = file_path.suffix.upper().lstrip('.')
 
-            lines.append(f"| {icon} [{file_path.name}]({encoded_path}) | {ext} | {file_path.stem} |")
+            lines.append(f"| {icon} [{rel_path.name}]({encoded_path}) | {ext} | {rel_path.stem} |")
 
         lines.append("")
         lines.append("---")
